@@ -5,11 +5,7 @@ from src.nodes.intent_router import intent_router_node
 from src.nodes.rag import rag_node
 from src.nodes.tool_call import tool_call_node
 from src.nodes.chitchat import chitchat_node
-
-
-def response_generator_node(state: GraphState) -> GraphState:
-    print("[response_generator] TODO: implement final response")
-    return {**state, "final_response": "Not implemented yet."}
+from src.nodes.response_generator import response_generator_node
 
 
 # --- Routing logic ---
