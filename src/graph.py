@@ -3,13 +3,7 @@ from src.state import GraphState
 from src.nodes.guardrail import guardrail_node
 from src.nodes.intent_router import intent_router_node
 from src.nodes.rag import rag_node
-
-
-
-
-def tool_call_node(state: GraphState) -> GraphState:
-    print("[tool_call] TODO: implement API tools")
-    return {**state, "tool_output": None}
+from src.nodes.tool_call import tool_call_node
 
 
 def chitchat_node(state: GraphState) -> GraphState:
