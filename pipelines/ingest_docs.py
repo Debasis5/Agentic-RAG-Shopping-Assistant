@@ -72,10 +72,10 @@ def _parse_header(text: str) -> tuple[dict, str]:
 
 def chunk_documents(docs: list[Document]) -> list[Document]:
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
+        chunk_size=650,
         chunk_overlap=0,
         separators=[
-            r"\n(?=\d+\.)",   # split on numbered sections: 1. 2. 3. etc.
+            r"\n(?=\d+\. )",  # split before numbered sections: 1. , 2. , 3. etc.
             "\n\n",
             "\n",
         ],
