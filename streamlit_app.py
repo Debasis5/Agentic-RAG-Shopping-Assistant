@@ -29,20 +29,19 @@ st.markdown("""
   header[data-testid="stHeader"] { display: none; }
   footer { display: none; }
 
-  /* Keep sidebar visible even when aria-expanded=false */
+  /* Force sidebar always visible — override Streamlit's translateX hide */
+  section[data-testid="stSidebar"] {
+    transform: translateX(0) !important;
+    margin-left: 0 !important;
+    min-width: 244px !important;
+    visibility: visible !important;
+  }
   section[data-testid="stSidebar"][aria-expanded="false"] {
+    transform: translateX(0) !important;
     margin-left: 0 !important;
-    transform: none !important;
   }
-  .eelgd2m0[aria-expanded="false"] {
-    margin-left: 0 !important;
-    transform: none !important;
-  }
-  /* Hide the collapse button inside the sidebar */
-  div[data-testid="stSidebarCollapseButton"] {
-    display: none !important;
-  }
-  /* Hide the reopen arrow (not needed since sidebar never collapses) */
+  /* Hide collapse and reopen buttons */
+  div[data-testid="stSidebarCollapseButton"],
   button[data-testid="collapsedControl"] {
     display: none !important;
   }
@@ -75,13 +74,19 @@ st.markdown("""
   .top-sticky {
     position: fixed;
     top: 0;
-    left: 310px;
+    left: 244px;
     right: 0;
     z-index: 999;
-    background-color: #f3f3f3;
+    background-color: var(--background-color, transparent);
     padding: 6px 1rem 4px 1rem;
     box-shadow: 0 1px 4px rgba(0,0,0,0.06);
     overflow: hidden;
+  }
+  @media (prefers-color-scheme: light) {
+    .top-sticky { background-color: #f3f3f3; }
+  }
+  @media (prefers-color-scheme: dark) {
+    .top-sticky { background-color: #0e1117; }
   }
 
   /* Aria header bar */
@@ -157,6 +162,18 @@ st.markdown("""
     border: 1px solid #e3e6e6;
     border-bottom-left-radius: 4px;
   }
+  @media (prefers-color-scheme: dark) {
+    .bubble.assistant {
+      background: #2a2d35 !important;
+      color: #e8eaed !important;
+      border-color: #3c4049 !important;
+    }
+    .chip {
+      background: #1e2128 !important;
+      border-color: #3c4049 !important;
+      color: #e8eaed !important;
+    }
+  }
   /* Tighten markdown inside assistant bubble */
   .bubble.assistant p  { margin: 0 0 0.3rem 0; }
   .bubble.assistant ul,
@@ -204,6 +221,14 @@ st.markdown("""
   }
   div[data-testid="stChatInput"] textarea:focus {
     box-shadow: 0 0 14px rgba(255, 153, 0, 0.55), 0 0 4px rgba(255, 153, 0, 0.3) !important;
+    outline: none !important;
+  }
+  div[data-testid="stChatInput"] > div {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    display: flex !important;
+    align-items: center !important;
   }
 </style>
 """, unsafe_allow_html=True)
@@ -237,33 +262,44 @@ with st.sidebar:
 """, unsafe_allow_html=True)
     st.markdown("---")
     st.markdown("""
-<p style="font-style:italic; color:#555; font-size:0.85rem; line-height:1.5; border-left:3px solid #1a73e8; padding-left:10px; margin:4px 0;">
+<p style="font-style:italic; font-size:0.85rem; line-height:1.5; border-left:3px solid #1a73e8; padding-left:10px; margin:4px 0; opacity:0.75;">
 Aria is your AI shopping assistant, powered by ShopEasy's knowledge base.
 </p>""", unsafe_allow_html=True)
     st.markdown("---")
-    st.markdown("**What I can do:**")
-    st.markdown("- 📦 Track orders & shipments")
-    st.markdown("- 🔄 Help with returns & refunds")
-    st.markdown("- 💳 Answer payment questions")
-    st.markdown("- 📋 Explain store policies")
-    st.markdown("- 🙋 General account help")
-    # Push clear chat, hotline and caption to the bottom
     st.markdown("""
-<div style="position:fixed; bottom:1.2rem; width:220px;">
-    <hr style="border-color:#e0e0e0; margin-bottom:0.6rem;">
-    <div style="font-size:0.78rem; color:#444; margin-bottom:0.6rem; text-align:center;">📞 <strong>Support hotline</strong><br>
-        <span style="font-family:monospace; color:#1a73e8;">1800-3000-9009</span>
-    </div>
-    <div style="font-size:0.68rem; color:#999; margin-bottom:0.6rem; text-align:center;">Powered by ShopEasy Aria · v1.0</div>
+<div style="font-size:0.78rem;">
+<strong>What I can do:</strong>
+<ul style="margin-top:0.3rem; padding-left:1.1rem;">
+  <li>📦 Track orders &amp; shipments</li>
+  <li>🔄 Help with returns &amp; refunds</li>
+  <li>💳 Answer payment questions</li>
+  <li>📋 Explain store policies</li>
+  <li>🙋 General account help</li>
+</ul>
 </div>
 """, unsafe_allow_html=True)
-    # Spacer to push button above the fixed hotline block
-    st.markdown("<div style='height:110px'></div>", unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        if st.button("🗑️ Clear chat"):
-            st.session_state.messages = []
-            st.rerun()
+    # Fixed bottom block: clear button + hotline + caption
+    if st.button("🗑️ Clear chat", key="clear_chat"):
+        st.session_state.messages = []
+        st.rerun()
+    st.markdown("""
+<style>
+  section[data-testid="stSidebar"] div.stButton > button {
+    position: fixed;
+    bottom: 7.5rem;
+    width: 220px;
+    white-space: nowrap !important;
+    font-size: 0.8rem !important;
+  }
+</style>
+<div style="position:fixed; bottom:1.2rem; width:220px;">
+    <hr style="border-color:#e0e0e0; margin-bottom:0.6rem;">
+    <div style="font-size:0.78rem; margin-bottom:0.6rem; text-align:center; opacity:0.85;">📞 <strong>Support hotline</strong><br>
+        <span style="font-family:monospace; color:#1a73e8;">1800-3000-9009</span>
+    </div>
+    <div style="font-size:0.68rem; opacity:0.5; margin-bottom:0.6rem; text-align:center;">Powered by ShopEasy Aria · v1.0</div>
+</div>
+""", unsafe_allow_html=True)
 
 
 # ── Header ────────────────────────────────────────────────────────────────────
@@ -289,7 +325,6 @@ st.markdown(f"""
     </div>
   </div>
   {chips_html}
-  <hr style="margin:4px 0 0 0; border-color:#ddd;">
 </div>""", unsafe_allow_html=True)
 
 
