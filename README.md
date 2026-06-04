@@ -77,7 +77,7 @@ User Query
 ├── .env                    # Environment variables (not committed)
 ├── data/
 │   └── docs/               # Generated policy PDFs
-├── chroma_db/              # ChromaDB vector store (auto-created)
+├── chroma_db/              # ChromaDB vector store
 ├── pipelines/
 │   └── ingest_docs.py      # Document ingestion pipeline
 ├── scripts/
@@ -220,7 +220,7 @@ data/docs/*.pdf
 │  · chunk_size    = 650 chars             │
 │  · chunk_overlap = 0                     │
 │  · Splits on numbered sections first     │
-│    (regex: \n(?=\d+\. )), then \n\n,    │
+│    (regex: \n(?=\d+\. )), then \n\n,     │
 │    then \n                               │
 └─────────────────┬────────────────────────┘
                   │
